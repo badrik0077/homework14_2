@@ -95,18 +95,24 @@ def step_4(genre):
     )
 
 
+
+
 def step_5(name1='Rose McIver', name2='Ben Lamb'):
     sql = f'''
-        select "cast" from netflix 
-        where "cast" like '%{name1}%' and "cast" like '%{name2}' 
+        SELECT \"cast\" FROM netflix
+        WHERE \"cast\" LIKE '%{name1}%' AND \"cast\" LIKE '%{name2}%'
         '''
+    #sql = f'''
+        #select "cast" from netflix
+        #where "cast" like '%{name1}%' and "cast" like '%{name2}'
+        #'''
 
     names_dict = {}
 
     for item in get_data_by_sql(sql):
         result = dict(item)
 
-        names = set(result.get('cast').split(", ")) - set([name1, name2])
+        names = set(result.get('cast').split(", ")) - {name1, name2}
 
         for name in names:
             names_dict[name.strip()] = names_dict.get(name.strip(), 0) + 1
@@ -118,21 +124,20 @@ def step_5(name1='Rose McIver', name2='Ben Lamb'):
             print(key)
 
 
+
+
 def step_6(types='Movie', year=2020, genre='Horror'):
-    sql = f"""
-            select title, description, listed_in
-            from netflix
-            where type = "{types}"
-            and release_year = "{year}",
-            and listed_in like "%{genre}%"
-            """
+    sql = f'''
+        select * from netflix
+        where type = '{types.title()}' and release_year = '{year}' and listed_in like '%{genre.title()}%'
+        '''
     result = []
 
     for item in get_data_by_sql(sql):
         result.append(dict(item))
 
-    return result
+    return json.dumps(result, ensure_ascii=False, indent=4)
 
 
 if __name__ == '__main__':
-    print(step_5())
+    print(step_6())
